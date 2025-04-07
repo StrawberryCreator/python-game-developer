@@ -1,4 +1,7 @@
-"""
+print ("="*50)
+
+#function
+
 def chatbot ():
     print ("Hello, i am a chatbot!")
     print ("What is your name?")
@@ -6,7 +9,8 @@ def chatbot ():
     print ("Hello", name)
 
 chatbot ()
-"""
+
+print ("-"*50)
 
 #create a student class
 
@@ -23,11 +27,16 @@ class student:
         print (f"teacher {self.teacher}")
 
 student1 = student ("Sebbe", "12", "7.6")
+student1.studentDetails ()
+print ("- "*25)
 print (student1.name)
 student1.teacher = "Milou"
+print ("- "*25)
 student1.studentDetails ()
 
 print ("-"*50)
+
+#create a fruit class
 
 class fruit:
     def __init__(self, name, amount, size, shape, taste):
@@ -48,3 +57,5 @@ fruit1.fruitDetails ()
 fruit1.amount = 5
 print ("- "*25)
 fruit1.fruitDetails ()
+
+print ("="*50)
