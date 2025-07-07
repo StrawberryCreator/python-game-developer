@@ -10,6 +10,8 @@ gameOver = False
 starMode = False
 starTimer = 0
 
+bullets = []
+
 bg = py.image.load ("L9 | asteroids/images/bg.png")
 asteroidSmall = py.image.load ("L9 | asteroids/images/smallAsteroid.png")
 asteroidMedium = py.image.load ("L9 | asteroids/images/bigAsteroid.png")
@@ -29,36 +31,14 @@ class Ship:
         self.height = self.image.get_height ()
         self.x = 400
         self.y = 400
-        self.direction = "up"
+        self.angle = 0
         self.updateRotation ()
     def updateRotation (self):
-        if self.direction == "up":
-            self.angle = 0
-            self.head = (self.x, self.y)
-        if self.direction == "right":
-            self.angle = 90
-            self.head = (self.x, self.y)
-        if self.direction == "down":
-            self.angle = 180
-            self.head = (self.x, self.y)
-        if self.direction == "left":
-            self.angle = 270
-            self.head = (self.x, self.y)
         self.rotatedShip = py.transform.rotate (self.image, self.angle)
         self.rotatedRect = self.rotatedShip.get_rect ()
         self.rotatedRect.center = self.x, self.y
     def draw (self, screen):
         screen.blit (self.rotatedShip, self.rotatedRect)
-    def turnRight (self):
-        directions = ["up", "left", "down", "right"]
-        index = directions.index (self.direction)
-        self.direction = directions [(index+1)%4]
-        self.updateRotation ()
-    def turnLeft (self):
-        directions = ["up", "right", "down", "left"]
-        index = directions.index (self.direction)
-        self.direction = directions [(index+1)%4]
-        self.updateRotation ()
     def move (self, key):
         if key[py.K_w]:
             if self.y > 0:
@@ -72,6 +52,35 @@ class Ship:
         if key[py.K_a]:
             if self.x > 0:
                 self.x -= 5
+        if key[py.K_e]:
+            if self.angle <= 5:
+                self.angle = 360
+            else:
+                self.angle -= 2
+            player.updateRotation ()
+        if key[py.K_q]:
+            if self.angle >= 355:
+                self.angle = 0
+            else:
+                self.angle += 2
+            player.updateRotation ()
+        if key[py.K_SPACE]:
+                bullet = Bullet (self.rotatedRect.x, self.rotatedRect.y, self.angle)
+                bullets.append (bullet)
+        self.rotatedRect.center = self.x, self.y
+
+class Bullet:
+    def __init__ (self, x, y, dir):
+        self.x = x
+        self.y = y
+        self.dir = dir
+        self.radius = 10
+        self.speed = 5
+        self.color = "red"
+    def draw (self):
+        py.draw.circle (screen, self.color, (self.x, self.y), self.radius)
+    def move (self):
+        
 
 player = Ship ()
 
@@ -79,11 +88,6 @@ while True:
     for event in py.event.get ():
         if event.type == py.QUIT:
             exit ()
-        if event.type == py.KEYDOWN:
-            if event.key == py.K_q:
-                player.turnLeft ()
-            if event.key == py.K_e:
-                player.turnRight ()
     key = py.key.get_pressed ()
     player.move (key)
     screen.blit (bg, (0, 0))
