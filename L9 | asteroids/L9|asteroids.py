@@ -30,8 +30,8 @@ class Ship:
         self.x = 400
         self.y = 400
         self.direction = "up"
-        self.update_rotation ()
-    def update_rotation (self):
+        self.updateRotation ()
+    def updateRotation (self):
         if self.direction == "up":
             self.angle = 0
             self.head = (self.x, self.y)
@@ -49,27 +49,27 @@ class Ship:
         self.rotatedRect.center = self.x, self.y
     def draw (self, screen):
         screen.blit (self.rotatedShip, self.rotatedRect)
-    def turnLeft (self):
+    def turnRight (self):
         directions = ["up", "left", "down", "right"]
         index = directions.index (self.direction)
         self.direction = directions [(index+1)%4]
-        self.update_rotation
-    def turnRight (self):
+        self.updateRotation ()
+    def turnLeft (self):
         directions = ["up", "right", "down", "left"]
         index = directions.index (self.direction)
         self.direction = directions [(index+1)%4]
-        self.update_rotation
-    def move (self):
-        if self.direction == "up":
+        self.updateRotation ()
+    def move (self, key):
+        if key[py.K_w]:
             if self.y > 0:
                 self.y -= 5
-        if self.direction == "right":
+        if key[py.K_d]:
             if self.x < 800:
                 self.x += 5
-        if self.direction == "down":
+        if key[py.K_s]:
             if self.y < 800:
                 self.y += 5
-        if self.direction == "left":
+        if key[py.K_a]:
             if self.x > 0:
                 self.x -= 5
 
@@ -79,6 +79,13 @@ while True:
     for event in py.event.get ():
         if event.type == py.QUIT:
             exit ()
+        if event.type == py.KEYDOWN:
+            if event.key == py.K_q:
+                player.turnLeft ()
+            if event.key == py.K_e:
+                player.turnRight ()
+    key = py.key.get_pressed ()
+    player.move (key)
     screen.blit (bg, (0, 0))
     player.draw (screen)
     py.display.update ()
