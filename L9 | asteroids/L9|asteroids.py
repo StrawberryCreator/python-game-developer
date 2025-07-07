@@ -80,6 +80,7 @@ class Bullet:
     def draw (self):
         py.draw.circle (screen, self.color, (self.x, self.y), self.radius)
     def move (self):
+        print ("move")
         
 
 player = Ship ()
