@@ -1,4 +1,5 @@
 import pygame as py
+import math
 
 py.init ()
 screen = py.display.set_mode ((800, 800))
@@ -42,27 +43,27 @@ class Ship:
     def move (self, key):
         if key[py.K_w]:
             if self.y > 0:
-                self.y -= 5
+                self.y -= 2.5
         if key[py.K_d]:
             if self.x < 800:
-                self.x += 5
+                self.x += 2.5
         if key[py.K_s]:
             if self.y < 800:
-                self.y += 5
+                self.y += 2.5
         if key[py.K_a]:
             if self.x > 0:
-                self.x -= 5
+                self.x -= 2.5
         if key[py.K_e]:
             if self.angle <= 5:
                 self.angle = 360
             else:
-                self.angle -= 2
+                self.angle -= 2.5
             player.updateRotation ()
         if key[py.K_q]:
             if self.angle >= 355:
                 self.angle = 0
             else:
-                self.angle += 2
+                self.angle += 2.5
             player.updateRotation ()
         if key[py.K_SPACE]:
                 bullet = Bullet (self.rotatedRect.x, self.rotatedRect.y, self.angle)
@@ -77,11 +78,13 @@ class Bullet:
         self.radius = 10
         self.speed = 5
         self.color = "red"
+        self.dx = math.cos (math.radians (-self.dir)) * self.speed
+        self.dy = math.sin (math.radians (-self.dir)) * self.speed
     def draw (self):
         py.draw.circle (screen, self.color, (self.x, self.y), self.radius)
     def move (self):
-        print ("move")
-        
+        self.x += self.dx
+        self.y += self.dy
 
 player = Ship ()
 
@@ -89,6 +92,9 @@ while True:
     for event in py.event.get ():
         if event.type == py.QUIT:
             exit ()
+    for bul in bullets:
+        bul.move ()
+        bul.draw ()
     key = py.key.get_pressed ()
     player.move (key)
     screen.blit (bg, (0, 0))
