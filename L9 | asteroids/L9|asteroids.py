@@ -109,13 +109,7 @@ class Asteroid:
         self.rect = py.Rect (self.x, self.y, self.size, self.size)
         self.speed = r.uniform (1.5, 3.0)
     def move (self):
-        dx = (self.x - 400) * -1 - self.rect.centerx
-        dy = (self.y - 400) * -1 - self.rect.centery
-        distance = (dx ** 2 + dy ** 2) ** 0.5
-        self.vx = self.speed * dx / distance
-        self.vy = self.speed * dy / distance
-        self.rect.x += self.vx
-        self.rect.y += self.vy
+        print ()
     def draw (self):
         screen.blit (self.image, (self.rect.x, self.rect.y))
 
