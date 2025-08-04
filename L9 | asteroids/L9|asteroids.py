@@ -6,6 +6,8 @@ py.init ()
 screen = py.display.set_mode ((800, 800))
 screen.fill ("white")
 
+font = py.font.SysFont ("Ariel", 75)
+
 lives = 5
 score = 0
 gameOver = False
@@ -93,6 +95,12 @@ class Asteroid:
         if self.rock == 3:
            self.image = py.image.load ("L9 | asteroids/images/bigAsteroid.png")
            self.size = 150
+        self.corners = [(0,0), (800,0), (800,800), (0,800)]
+        self.start = r.choice (self.corners)
+        self.target = r.choice([i for i in self.corners if i != self.start])
+        self.x, self.y = self.start
+        self.tx, self.ty = self.target
+        """
         self.edge = r.randint (1, 4)
         if self.edge == 1:
             self.x = r.randint (0, 800)
@@ -106,15 +114,27 @@ class Asteroid:
         if self.edge == 4:
             self.x = -100
             self.y = r.randint (0, 800)
+        """
         self.rect = py.Rect (self.x, self.y, self.size, self.size)
-        self.speed = r.uniform (1.5, 3.0)
+        self.speed = r.uniform (1.0, 1.5)
+        dx = self.tx - self.x
+        dy = self.ty - self.y
+        distance = math.hypot (dx, dy)
+        self.dx = dx / distance * self.speed
+        self.dy = dy / distance * self.speed
     def move (self):
-        print ()
+        self.x += self.dx
+        self.y += self.dy
+        self.rect.x = self.x
+        self.rect.y = self.y
     def draw (self):
         screen.blit (self.image, (self.rect.x, self.rect.y))
 
-asteroids = [Asteroid () for i in range (5)]
+asteroids = [Asteroid () for i in range (2)]
 player = Ship ()
+
+currentTime = py.time.get_ticks ()
+delay = 3000
 
 while True:
     screen.blit (bg, (0, 0))
@@ -125,13 +145,37 @@ while True:
             if event.key == py.K_SPACE:
                 bullet = Bullet (player.rotatedRect.centerx, player.rotatedRect.centery, player.angle + 90)
                 bullets.append (bullet)
-    for i in asteroids:
-        i.move ()
-        i.draw ()
-    for bul in bullets:
-        bul.move ()
-        bul.draw ()
-    key = py.key.get_pressed ()
-    player.move (key)
-    player.draw (screen)
+    lastSpawnTime = py.time.get_ticks ()
+    if lastSpawnTime - currentTime >= delay:
+        asteroids.append ([Asteroid () for i in range (r.randint (1,3))])
+        currentTime = lastSpawnTime
+    if gameOver:
+        txt = font.render ("GAME OVER!", True, "red")
+        screen.blit (txt, (250, 300))
+    else:
+        for i in asteroids:
+            i.move ()
+            i.draw ()
+        for bul in bullets:
+            bul.move ()
+            bul.draw ()
+        for i in asteroids:
+            for j in bullets:
+                if i.rect.collidepoint (j.x, j.y):
+                    bullets.remove (j)
+                    asteroids.remove (i)
+                    if i.size == 50:
+                        bangSmall.play ()
+                    else:
+                        bangBig.play ()
+                    score += 1
+        for i in asteroids:
+            if i.rect.colliderect (player.rotatedRect):
+                asteroids.remove (i)
+                lives -= 1
+                if lives == 0:
+                    gameOver = True
+        key = py.key.get_pressed ()
+        player.move (key)
+        player.draw (screen)
     py.display.update ()
