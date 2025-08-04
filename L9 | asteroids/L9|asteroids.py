@@ -100,21 +100,6 @@ class Asteroid:
         self.target = r.choice([i for i in self.corners if i != self.start])
         self.x, self.y = self.start
         self.tx, self.ty = self.target
-        """
-        self.edge = r.randint (1, 4)
-        if self.edge == 1:
-            self.x = r.randint (0, 800)
-            self.y = -100
-        if self.edge == 2:
-            self.x = 900
-            self.y = r.randint (0, 800)
-        if self.edge == 3:
-            self.x = r.randint(0, 800)
-            self.y = 900
-        if self.edge == 4:
-            self.x = -100
-            self.y = r.randint (0, 800)
-        """
         self.rect = py.Rect (self.x, self.y, self.size, self.size)
         self.speed = r.uniform (1.0, 1.5)
         dx = self.tx - self.x
@@ -147,12 +132,19 @@ while True:
                 bullets.append (bullet)
     lastSpawnTime = py.time.get_ticks ()
     if lastSpawnTime - currentTime >= delay:
-        asteroids.append ([Asteroid () for i in range (r.randint (1,3))])
+        asteroids.extend ([Asteroid () for i in range (r.randint (1,3))])
         currentTime = lastSpawnTime
     if gameOver:
-        txt = font.render ("GAME OVER!", True, "red")
-        screen.blit (txt, (250, 300))
+        txt = font.render (f"GAME OVER! score: {score}", True, "red")
+        screen.blit (txt, (100, 300))
+    elif score >= 20:
+        txt = font.render (f"YOU WIN! score: {score}", True, "red")
+        screen.blit (txt, (100, 300))
     else:
+        scoreTxt = font.render (f"score: {score}", True, "white")
+        screen.blit (scoreTxt, (10, 10))
+        livesTxt = font.render (f"lives: {lives}", True, "white")
+        screen.blit (livesTxt, (10, 75))
         for i in asteroids:
             i.move ()
             i.draw ()
